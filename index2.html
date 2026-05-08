@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sélecteur de valeurs</title>
+        <link rel="stylesheet" href="style2.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="main-container">
+            <div class="selector-box chlore">
+                <p>Chlore</p>
+                <div class="glissiere">
+                    <div class="indicator"></div>
+                    <ul class="value-list">
+                        <li class="value-item active" data-value="0">0</li>
+                        <li class="value-item" data-value="0.5">0.5</li>
+                        <li class="value-item" data-value="1">1</li>
+                        <li class="value-item" data-value="3">3</li>
+                        <li class="value-item" data-value="5">5</li>
+                        <li class="value-item" data-value="10">10</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="selector-box ph">
+                <p>pH</p>
+                <div class="glissiere">
+                    <div class="indicator"></div>
+                    <ul class="value-list">
+                        <li class="value-item active" data-value="6.2">6.2</li>
+                        <li class="value-item" data-value="6.8">6.8</li>
+                        <li class="value-item" data-value="7.2">7.2</li>
+                        <li class="value-item" data-value="7.8">7.8</li>
+                        <li class="value-item" data-value="8.4">8.4</li>
+                    </ul>
+                </div>    
+            </div>
+
+            <div class="selector-box alcalinite">
+                <p>Alcalinité</p>
+                <div class="glissiere">
+                    <div class="indicator"></div>
+                    <ul class="value-list">
+                        <li class="value-item active" data-value="0">0</li>
+                        <li class="value-item" data-value="40">40</li>
+                        <li class="value-item" data-value="80">80</li>
+                        <li class="value-item" data-value="120">120</li>
+                        <li class="value-item" data-value="180">180</li>
+                        <li class="value-item" data-value="240">240</li>
+                    </ul>
+                </div>    
+            </div>
+
+            <button class="my-button">Enregistrer</button>
+            
+        </div> 
+        
+         <script src="script2.js"></script>
+    </body>
+</html>
