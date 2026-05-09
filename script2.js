@@ -16,6 +16,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // IMPORTANT : On doit RE-PRÉCISER le translateY(-50%) sinon le 
     // translate du JS écraserait celui du CSS !
     indicator.style.transform = `translateX(${deplacement}px) `;
+
+    const newGradient = activeItem.getAttribute('data-color');
+    if(newGradient){
+        container.style.background = newGradient;
+        container.style.transition = "background 0.4s ease";
+    }
+    const colorTxt = activeItem.getAttribute('cltxt');
+    if (colorTxt) {
+        // Applique la couleur au conteneur
+        container.style.color = colorTxt;
+        const indicator = container.querySelector('.indicator')
+        indicator.style.borderColor = colorTxt
+        
+        // ASTUCE : Si tes .value-item ne changent pas de couleur, 
+        // force l'héritage pour qu'ils écoutent le parent :
+        const allItems = container.querySelectorAll('.value-item');
+        allItems.forEach(item => {
+            item.style.color = colorTxt;
+        });
+    }
 }
 
     // 3. On boucle sur chaque sélecteur pour l'initialiser individuellement
@@ -32,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // On déplace l'indicateur de CE conteneur
                 updateIndicator(clickedItem, container);
+
             });
         });
 
