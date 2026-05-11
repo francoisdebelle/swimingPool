@@ -1,65 +1,97 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. On récupère TOUTES les boîtes de sélecteur de la page
+    // --- CONFIGURATION GOOGLE SHEETS ---
+    // Remplace l'URL ci-dessous par l'URL que tu as obtenue lors du déploiement App Script
+    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxDJ5QeK2feo7VWcx0oWdjxF2TE7XbsDSiyEVeDAys1GOWoo84BbgbRhFXT4FoA5IIr/exec";
+
     const allSelectors = document.querySelectorAll('.selector-box');
 
-    // 2. On définit la fonction de mise à jour (elle doit savoir quelle boîte elle traite)
     function updateIndicator(activeItem, container) {
-    const indicator = container.querySelector('.indicator');
-    
-    const x = activeItem.offsetLeft;
-    const itemWidth = activeItem.offsetWidth;
-    const indicatorWidth = indicator.offsetWidth;
-    const deplacement = x + itemWidth/2 - indicatorWidth/2;
-
-
-    // On déplace UNIQUEMENT sur l'axe X.
-    // IMPORTANT : On doit RE-PRÉCISER le translateY(-50%) sinon le 
-    // translate du JS écraserait celui du CSS !
-    indicator.style.transform = `translateX(${deplacement}px) `;
-
-    const newGradient = activeItem.getAttribute('data-color');
-    if(newGradient){
-        container.style.background = newGradient;
-        container.style.transition = "background 0.4s ease";
-    }
-    const colorTxt = activeItem.getAttribute('cltxt');
-    if (colorTxt) {
-        // Applique la couleur au conteneur
-        container.style.color = colorTxt;
-        const indicator = container.querySelector('.indicator')
-        indicator.style.borderColor = colorTxt
+        const indicator = container.querySelector('.indicator');
         
-        // ASTUCE : Si tes .value-item ne changent pas de couleur, 
-        // force l'héritage pour qu'ils écoutent le parent :
-        const allItems = container.querySelectorAll('.value-item');
-        allItems.forEach(item => {
-            item.style.color = colorTxt;
-        });
-    }
-}
+        const x = activeItem.offsetLeft;
+        const itemWidth = activeItem.offsetWidth;
+        const indicatorWidth = indicator.offsetWidth;
+        const deplacement = x + itemWidth/2 - indicatorWidth/2;
 
-    // 3. On boucle sur chaque sélecteur pour l'initialiser individuellement
+        indicator.style.transform = `translateX(${deplacement}px) `;
+
+        const newGradient = activeItem.getAttribute('data-color');
+        if(newGradient){
+            container.style.background = newGradient;
+            container.style.transition = "background 0.4s ease";
+        }
+        
+        const colorTxt = activeItem.getAttribute('cltxt');
+        if (colorTxt) {
+            container.style.color = colorTxt;
+            indicator.style.borderColor = colorTxt;
+            
+            const allItems = container.querySelectorAll('.value-item');
+            allItems.forEach(item => {
+                item.style.color = colorTxt;
+            });
+        }
+    }
+
     allSelectors.forEach(container => {
         const valueItems = container.querySelectorAll('.value-item');
 
         valueItems.forEach(item => {
             item.addEventListener('click', (event) => {
                 const clickedItem = event.currentTarget;
-
-                // On enlève 'active' seulement à l'intérieur de CE conteneur
                 container.querySelector('.value-item.active').classList.remove('active');
                 clickedItem.classList.add('active');
-
-                // On déplace l'indicateur de CE conteneur
                 updateIndicator(clickedItem, container);
-
             });
         });
 
-        // Initialisation de la position de départ pour ce sélecteur précis
         const initialActive = container.querySelector('.value-item.active');
         if (initialActive) {
             setTimeout(() => updateIndicator(initialActive, container), 50);
         }
     });
+
+    // --- LOGIQUE D'ENREGISTREMENT ---
+    const saveBtn = document.querySelector('.my-button');
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            // Désactiver le bouton temporairement pour éviter les doubles clics
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Envoi...";
+
+            // Récupération dynamique des valeurs "actives"
+            // On part du principe que tes sélecteurs sont dans l'ordre : Chlore, PH, Alcalinité dans le HTML
+            const values = [];
+            allSelectors.forEach(container => {
+                const activeItem = container.querySelector('.value-item.active');
+                values.push(activeItem ? activeItem.innerText : "");
+            });
+
+            const payload = {
+                chlore: values[0],
+                ph: values[1],
+                alcalinite: values[2]
+            };
+
+            fetch(URL_SCRIPT, {
+                method: 'POST',
+                mode: 'no-cors', // Évite les soucis de CORS avec Google Script
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                alert("Données envoyées à la feuille Google !");
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert("Erreur lors de l'enregistrement.");
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "Enregistrer";
+            });
+        });
+    }
 });
